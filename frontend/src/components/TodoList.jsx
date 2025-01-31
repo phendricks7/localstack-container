@@ -5,22 +5,30 @@ import TodoItem from './TodoItem';
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
+  
+  // Constructing URL using current url instead of hardcoded http://localhost:5000.
+  // So it works when opening on a different device in same wifi network.
+  let baseUrl = `${window.location.protocol}//${window.location.hostname}`;
+  
+  if (window.location.port !== undefined) {
+    baseUrl = `${baseUrl}:5000`;
+  }
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/todos')
+    axios.get(`${baseUrl}/api/todos`)
       .then(response => setTodos(response.data))
       .catch(error => console.error('Error fetching todos:', error));
   }, []);
 
   const addTodo = () => {
-    axios.post('http://localhost:5000/api/todos', { text: newTodo })
+    axios.post(`${baseUrl}/api/todos`, { text: newTodo })
       .then(response => setTodos([...todos, response.data]))
       .catch(error => console.error('Error adding todo:', error));
     setNewTodo('');
   };
 
   const deleteTodo = (id) => {
-    axios.delete(`http://localhost:5000/api/todos/${id}`)
+    axios.delete(`${baseUrl}/api/todos/${id}`)
       .then(() => setTodos(todos.filter(todo => todo._id !== id)))
       .catch(error => console.error('Error deleting todo:', error));
   };
